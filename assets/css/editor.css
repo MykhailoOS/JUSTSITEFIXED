@@ -1,0 +1,801 @@
+/**
+ * JSB Website Builder - Editor Styles
+ * Minimal CSS for editor frame only (NO global resets)
+ * Namespace: .jsb-editor to prevent conflicts with preview content
+ */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+:root {
+  /* Colors - Base */
+  --jsb-color-primary: #1A1C36;
+  --jsb-color-bg: #FFFFFF;
+  --jsb-color-surface: #F8F9FA;
+  --jsb-color-surface-hover: #F0F1F3;
+  --jsb-color-border: #E0E0E0;
+  --jsb-color-border-hover: #BDBDBD;
+  
+  /* Colors - Text */
+  --jsb-color-text: #1A1A1A;
+  --jsb-color-text-secondary: #424242;
+  --jsb-color-text-muted: #757575;
+  --jsb-color-text-light: #9E9E9E;
+  
+  /* Colors - Accent */
+  --jsb-color-accent: #3B82F6;
+  --jsb-color-accent-hover: #2563EB;
+  --jsb-color-success: #10B981;
+  --jsb-color-warning: #F59E0B;
+  --jsb-color-error: #EF4444;
+  
+  /* Spacing */
+  --jsb-space-xs: 4px;
+  --jsb-space-sm: 8px;
+  --jsb-space-md: 12px;
+  --jsb-space-lg: 16px;
+  --jsb-space-xl: 24px;
+  --jsb-space-2xl: 32px;
+  
+  /* Typography */
+  --jsb-font-display: "Bitcount Single", "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --jsb-font-body: "Inter", "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --jsb-font-mono: "SF Mono", "Monaco", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  
+  --jsb-font-size-xs: 0.75rem;    /* 12px */
+  --jsb-font-size-sm: 0.875rem;   /* 14px */
+  --jsb-font-size-base: 1rem;     /* 16px */
+  --jsb-font-size-lg: 1.125rem;   /* 18px */
+  --jsb-font-size-xl: 1.25rem;    /* 20px */
+  
+  /* Layout */
+  --jsb-topbar-height: 56px;
+  --jsb-sidebar-width: 280px;
+  --jsb-sidebar-collapsed: 60px;
+  
+  /* Shadows */
+  --jsb-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --jsb-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --jsb-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --jsb-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Borders */
+  --jsb-radius-sm: 4px;
+  --jsb-radius: 6px;
+  --jsb-radius-md: 8px;
+  --jsb-radius-lg: 12px;
+  
+  /* Transitions */
+  --jsb-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --jsb-transition-slow: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   EDITOR CONTAINER
+   ============================================ */
+.jsb-editor {
+  font-family: var(--jsb-font-body);
+  font-size: var(--jsb-font-size-base);
+  color: var(--jsb-color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent editor styles from leaking into preview */
+.jsb-editor * {
+  box-sizing: border-box;
+}
+
+/* ============================================
+   LAYOUT STRUCTURE
+   ============================================ */
+.jsb-editor__layout {
+  display: grid;
+  grid-template-areas:
+    "topbar topbar topbar"
+    "left canvas right";
+  grid-template-columns: var(--jsb-sidebar-width) 1fr var(--jsb-sidebar-width);
+  grid-template-rows: var(--jsb-topbar-height) 1fr;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--jsb-color-surface);
+}
+
+/* ============================================
+   TOPBAR
+   ============================================ */
+.jsb-editor__topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--jsb-space-lg);
+  background: var(--jsb-color-primary);
+  color: #FFFFFF;
+  box-shadow: var(--jsb-shadow-md);
+  z-index: 1000;
+}
+
+.jsb-editor__topbar-left,
+.jsb-editor__topbar-center,
+.jsb-editor__topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--jsb-space-md);
+}
+
+.jsb-editor__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--jsb-space-sm);
+  font-family: var(--jsb-font-display);
+  font-weight: 600;
+  font-size: var(--jsb-font-size-lg);
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.jsb-editor__logo-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.jsb-editor__project-name {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--jsb-font-size-sm);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   SIDEBAR (GENERIC)
+   ============================================ */
+.jsb-editor__sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--jsb-color-bg);
+  border-right: 1px solid var(--jsb-color-border);
+  overflow: hidden;
+}
+
+.jsb-editor__sidebar--right {
+  border-right: none;
+  border-left: 1px solid var(--jsb-color-border);
+}
+
+.jsb-editor__sidebar-header {
+  padding: var(--jsb-space-lg);
+  border-bottom: 1px solid var(--jsb-color-border);
+}
+
+.jsb-editor__sidebar-title {
+  font-family: var(--jsb-font-display);
+  font-size: var(--jsb-font-size-lg);
+  font-weight: 600;
+  color: var(--jsb-color-text);
+  margin: 0 0 var(--jsb-space-xs) 0;
+}
+
+.jsb-editor__sidebar-subtitle {
+  font-size: var(--jsb-font-size-sm);
+  color: var(--jsb-color-text-muted);
+  margin: 0;
+}
+
+.jsb-editor__sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+.jsb-editor__sidebar-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.jsb-editor__sidebar-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.jsb-editor__sidebar-body::-webkit-scrollbar-thumb {
+  background: var(--jsb-color-border);
+  border-radius: 4px;
+}
+
+.jsb-editor__sidebar-body::-webkit-scrollbar-thumb:hover {
+  background: var(--jsb-color-border-hover);
+}
+
+/* ============================================
+   LEFT SIDEBAR (LIBRARY)
+   ============================================ */
+.jsb-editor__library {
+  grid-area: left;
+}
+
+/* ============================================
+   RIGHT SIDEBAR (INSPECTOR)
+   ============================================ */
+.jsb-editor__inspector {
+  grid-area: right;
+}
+
+/* ============================================
+   CANVAS AREA
+   ============================================ */
+.jsb-editor__canvas-wrapper {
+  grid-area: canvas;
+  display: flex;
+  flex-direction: column;
+  background: var(--jsb-color-surface);
+  overflow: hidden;
+  position: relative;
+}
+
+.jsb-editor__canvas {
+  flex: 1;
+  overflow: auto;
+  background-image: 
+    linear-gradient(45deg, #F5F5F5 25%, transparent 25%),
+    linear-gradient(-45deg, #F5F5F5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #F5F5F5 75%),
+    linear-gradient(-45deg, transparent 75%, #F5F5F5 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  background-color: #FFFFFF;
+  position: relative;
+}
+
+.jsb-editor__canvas-content {
+  min-height: 100%;
+  padding: var(--jsb-space-2xl);
+  margin: 0 auto;
+  background: white;
+  box-shadow: var(--jsb-shadow-lg);
+  transition: width var(--jsb-transition);
+}
+
+/* Responsive canvas widths */
+.jsb-editor__canvas-content[data-viewport="desktop"] {
+  width: 100%;
+  max-width: 1440px;
+}
+
+.jsb-editor__canvas-content[data-viewport="tablet"] {
+  width: 768px;
+}
+
+.jsb-editor__canvas-content[data-viewport="mobile"] {
+  width: 375px;
+}
+
+/* ============================================
+   BUTTONS & CONTROLS
+   ============================================ */
+.jsb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jsb-space-sm);
+  padding: var(--jsb-space-sm) var(--jsb-space-lg);
+  min-height: 44px;
+  font-family: var(--jsb-font-body);
+  font-size: var(--jsb-font-size-sm);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--jsb-radius);
+  cursor: pointer;
+  transition: all var(--jsb-transition);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.jsb-btn:focus-visible {
+  outline: 2px solid var(--jsb-color-accent);
+  outline-offset: 2px;
+}
+
+.jsb-btn--primary {
+  background: var(--jsb-color-accent);
+  color: #FFFFFF;
+}
+
+.jsb-btn--primary:hover {
+  background: var(--jsb-color-accent-hover);
+}
+
+.jsb-btn--secondary {
+  background: var(--jsb-color-surface);
+  color: var(--jsb-color-text);
+  border: 1px solid var(--jsb-color-border);
+}
+
+.jsb-btn--secondary:hover {
+  background: var(--jsb-color-surface-hover);
+}
+
+.jsb-btn--ghost {
+  background: transparent;
+  color: var(--jsb-color-text-secondary);
+}
+
+.jsb-btn--ghost:hover {
+  background: var(--jsb-color-surface);
+}
+
+.jsb-btn--icon {
+  min-width: 44px;
+  padding: var(--jsb-space-sm);
+}
+
+.jsb-btn--sm {
+  min-height: 36px;
+  padding: var(--jsb-space-xs) var(--jsb-space-md);
+  font-size: var(--jsb-font-size-xs);
+}
+
+/* Icon */
+.jsb-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   SEARCH INPUT
+   ============================================ */
+.jsb-search {
+  position: relative;
+  width: 100%;
+}
+
+.jsb-search__input {
+  width: 100%;
+  padding: var(--jsb-space-sm) var(--jsb-space-lg) var(--jsb-space-sm) var(--jsb-space-2xl);
+  font-family: var(--jsb-font-body);
+  font-size: var(--jsb-font-size-sm);
+  color: var(--jsb-color-text);
+  background: var(--jsb-color-surface);
+  border: 1px solid var(--jsb-color-border);
+  border-radius: var(--jsb-radius);
+  transition: all var(--jsb-transition);
+}
+
+.jsb-search__input:focus {
+  outline: none;
+  border-color: var(--jsb-color-accent);
+  background: var(--jsb-color-bg);
+}
+
+.jsb-search__icon {
+  position: absolute;
+  left: var(--jsb-space-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--jsb-color-text-muted);
+  pointer-events: none;
+}
+
+/* ============================================
+   ELEMENT LIBRARY
+   ============================================ */
+.jsb-library__search {
+  padding: var(--jsb-space-lg);
+  border-bottom: 1px solid var(--jsb-color-border);
+}
+
+.jsb-library__categories {
+  padding: var(--jsb-space-sm) 0;
+}
+
+.jsb-library__category {
+  margin-bottom: var(--jsb-space-lg);
+}
+
+.jsb-library__category-title {
+  padding: var(--jsb-space-sm) var(--jsb-space-lg);
+  font-size: var(--jsb-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--jsb-color-text-muted);
+}
+
+.jsb-library__elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--jsb-space-sm);
+  padding: 0 var(--jsb-space-lg);
+}
+
+.jsb-library__element {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jsb-space-sm);
+  padding: var(--jsb-space-lg) var(--jsb-space-sm);
+  min-height: 80px;
+  background: var(--jsb-color-surface);
+  border: 1px solid var(--jsb-color-border);
+  border-radius: var(--jsb-radius);
+  cursor: grab;
+  transition: all var(--jsb-transition);
+  user-select: none;
+}
+
+.jsb-library__element:hover {
+  background: var(--jsb-color-surface-hover);
+  border-color: var(--jsb-color-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--jsb-shadow);
+}
+
+.jsb-library__element:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.jsb-library__element-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--jsb-color-text-secondary);
+}
+
+.jsb-library__element-label {
+  font-size: var(--jsb-font-size-xs);
+  color: var(--jsb-color-text-secondary);
+  text-align: center;
+}
+
+/* Dragging state */
+.jsb-library__element--dragging {
+  opacity: 0.5;
+}
+
+/* ============================================
+   INSPECTOR
+   ============================================ */
+.jsb-inspector__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--jsb-space-xl);
+  text-align: center;
+  color: var(--jsb-color-text-muted);
+}
+
+.jsb-inspector__empty-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--jsb-space-md);
+  opacity: 0.3;
+}
+
+.jsb-inspector__tabs {
+  display: flex;
+  border-bottom: 1px solid var(--jsb-color-border);
+}
+
+.jsb-inspector__tab {
+  flex: 1;
+  padding: var(--jsb-space-md);
+  font-size: var(--jsb-font-size-sm);
+  font-weight: 500;
+  color: var(--jsb-color-text-secondary);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--jsb-transition);
+}
+
+.jsb-inspector__tab:hover {
+  color: var(--jsb-color-text);
+  background: var(--jsb-color-surface);
+}
+
+.jsb-inspector__tab--active {
+  color: var(--jsb-color-accent);
+  border-bottom-color: var(--jsb-color-accent);
+}
+
+.jsb-inspector__panel {
+  padding: var(--jsb-space-lg);
+}
+
+.jsb-inspector__section {
+  margin-bottom: var(--jsb-space-xl);
+}
+
+.jsb-inspector__section-title {
+  font-size: var(--jsb-font-size-sm);
+  font-weight: 600;
+  color: var(--jsb-color-text);
+  margin: 0 0 var(--jsb-space-md) 0;
+}
+
+/* Form Controls */
+.jsb-form-group {
+  margin-bottom: var(--jsb-space-md);
+}
+
+.jsb-form-label {
+  display: block;
+  font-size: var(--jsb-font-size-sm);
+  font-weight: 500;
+  color: var(--jsb-color-text-secondary);
+  margin-bottom: var(--jsb-space-xs);
+}
+
+.jsb-form-input,
+.jsb-form-select,
+.jsb-form-textarea {
+  width: 100%;
+  padding: var(--jsb-space-sm);
+  font-family: var(--jsb-font-body);
+  font-size: var(--jsb-font-size-sm);
+  color: var(--jsb-color-text);
+  background: var(--jsb-color-bg);
+  border: 1px solid var(--jsb-color-border);
+  border-radius: var(--jsb-radius);
+  transition: all var(--jsb-transition);
+}
+
+.jsb-form-input:focus,
+.jsb-form-select:focus,
+.jsb-form-textarea:focus {
+  outline: none;
+  border-color: var(--jsb-color-accent);
+}
+
+.jsb-form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Box Model Visualizer */
+.jsb-box-model {
+  padding: var(--jsb-space-lg);
+  background: var(--jsb-color-surface);
+  border-radius: var(--jsb-radius);
+  font-family: var(--jsb-font-mono);
+}
+
+.jsb-box-model__layer {
+  position: relative;
+  padding: var(--jsb-space-lg);
+  border: 1px dashed var(--jsb-color-border);
+  border-radius: var(--jsb-radius-sm);
+}
+
+.jsb-box-model__layer--margin {
+  background: #FEF3C7;
+}
+
+.jsb-box-model__layer--border {
+  background: #FED7AA;
+}
+
+.jsb-box-model__layer--padding {
+  background: #D9F99D;
+}
+
+.jsb-box-model__layer--content {
+  background: #BFDBFE;
+  text-align: center;
+  color: var(--jsb-color-text-secondary);
+  font-size: var(--jsb-font-size-xs);
+}
+
+.jsb-box-model__input {
+  width: 48px;
+  padding: 2px 4px;
+  font-size: var(--jsb-font-size-xs);
+  font-family: var(--jsb-font-mono);
+  text-align: center;
+  border: 1px solid var(--jsb-color-border);
+  border-radius: var(--jsb-radius-sm);
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.jsb-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.jsb-modal__content {
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--jsb-color-bg);
+  border-radius: var(--jsb-radius-md);
+  box-shadow: var(--jsb-shadow-lg);
+}
+
+.jsb-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--jsb-space-xl);
+  border-bottom: 1px solid var(--jsb-color-border);
+}
+
+.jsb-modal__title {
+  font-family: var(--jsb-font-display);
+  font-size: var(--jsb-font-size-xl);
+  font-weight: 600;
+  color: var(--jsb-color-text);
+  margin: 0;
+}
+
+.jsb-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--jsb-color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--jsb-radius);
+  cursor: pointer;
+  transition: all var(--jsb-transition);
+}
+
+.jsb-modal__close:hover {
+  color: var(--jsb-color-text);
+  background: var(--jsb-color-surface);
+}
+
+.jsb-modal__body {
+  padding: var(--jsb-space-xl);
+}
+
+.jsb-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--jsb-space-md);
+  padding: var(--jsb-space-xl);
+  border-top: 1px solid var(--jsb-color-border);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .jsb-editor__layout {
+    grid-template-areas:
+      "topbar topbar"
+      "canvas canvas";
+    grid-template-columns: 1fr;
+  }
+  
+  .jsb-editor__library,
+  .jsb-editor__inspector {
+    position: fixed;
+    top: var(--jsb-topbar-height);
+    bottom: 0;
+    width: var(--jsb-sidebar-width);
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform var(--jsb-transition);
+    box-shadow: var(--jsb-shadow-lg);
+  }
+  
+  .jsb-editor__library--open {
+    transform: translateX(0);
+  }
+  
+  .jsb-editor__inspector {
+    right: 0;
+    left: auto;
+    transform: translateX(100%);
+  }
+  
+  .jsb-editor__inspector--open {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  :root {
+    --jsb-topbar-height: 48px;
+    --jsb-sidebar-width: 100%;
+  }
+  
+  .jsb-editor__logo-text {
+    display: none;
+  }
+  
+  .jsb-editor__canvas-content {
+    padding: var(--jsb-space-lg);
+  }
+  
+  .jsb-library__elements {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+  
+  .jsb-btn {
+    padding: var(--jsb-space-sm);
+  }
+  
+  .jsb-btn span {
+    display: none;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Focus indicators */
+*:focus-visible {
+  outline: 2px solid var(--jsb-color-accent);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .jsb-editor__layout {
+    border: 2px solid currentColor;
+  }
+  
+  .jsb-btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.jsb-hidden {
+  display: none !important;
+}
+
+.jsb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

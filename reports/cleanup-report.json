@@ -1,0 +1,274 @@
+{
+  "audit_date": "2024-10-26",
+  "total_candidates": 19,
+  "total_size_kb": 248.5,
+  "categories": {
+    "debug_files": {
+      "count": 3,
+      "size_kb": 18.8,
+      "files": [
+        {
+          "path": "./debug_login.php",
+          "size_kb": 6.3,
+          "reason": "Debug/testing file, not used in production",
+          "action": "DELETE",
+          "priority": "HIGH"
+        },
+        {
+          "path": "./debug_api.php",
+          "size_kb": 0.8,
+          "reason": "API debugging utility, not needed",
+          "action": "DELETE",
+          "priority": "HIGH"
+        },
+        {
+          "path": "./debug_inline_editing.html",
+          "size_kb": 11.2,
+          "reason": "Standalone debug file for inline editing",
+          "action": "DELETE",
+          "priority": "HIGH"
+        }
+      ]
+    },
+    "test_files": {
+      "count": 4,
+      "size_kb": 12.0,
+      "files": [
+        {
+          "path": "./test_inline_editor_fix.html",
+          "size_kb": 0.0,
+          "reason": "Empty test file",
+          "action": "DELETE",
+          "priority": "HIGH"
+        },
+        {
+          "path": "./test_language.html",
+          "size_kb": 1.8,
+          "reason": "Language testing utility",
+          "action": "DELETE",
+          "priority": "MEDIUM"
+        },
+        {
+          "path": "./test_language_api.php",
+          "size_kb": 0.9,
+          "reason": "Language API testing",
+          "action": "DELETE",
+          "priority": "MEDIUM"
+        },
+        {
+          "path": "./test-loading.html",
+          "size_kb": 9.2,
+          "reason": "Loading screen test file",
+          "action": "DELETE",
+          "priority": "MEDIUM"
+        }
+      ]
+    },
+    "backup_files": {
+      "count": 5,
+      "size_kb": 163.6,
+      "files": [
+        {
+          "path": "./index_backup.php",
+          "size_kb": 69.5,
+          "reason": "Backup of main editor file",
+          "action": "ARCHIVE_THEN_DELETE",
+          "priority": "MEDIUM",
+          "note": "Keep in git history, safe to remove from working tree"
+        },
+        {
+          "path": "./profile_old.php",
+          "size_kb": 59.7,
+          "reason": "Old version of profile page",
+          "action": "ARCHIVE_THEN_DELETE",
+          "priority": "MEDIUM"
+        },
+        {
+          "path": "./landing_old.php",
+          "size_kb": 21.9,
+          "reason": "Old landing page version",
+          "action": "ARCHIVE_THEN_DELETE",
+          "priority": "MEDIUM"
+        },
+        {
+          "path": "./landing_backup.php",
+          "size_kb": 6.0,
+          "reason": "Landing page backup",
+          "action": "ARCHIVE_THEN_DELETE",
+          "priority": "MEDIUM"
+        },
+        {
+          "path": "./dashboard_old.php",
+          "size_kb": 6.1,
+          "reason": "Old dashboard version",
+          "action": "ARCHIVE_THEN_DELETE",
+          "priority": "LOW"
+        }
+      ]
+    },
+    "redundant_dashboards": {
+      "count": 1,
+      "size_kb": 6.1,
+      "files": [
+        {
+          "path": "./dashboard_simple.php",
+          "size_kb": 6.1,
+          "reason": "Duplicate simplified dashboard, main dashboard.php exists",
+          "action": "REVIEW_THEN_DELETE",
+          "priority": "LOW",
+          "note": "Verify dashboard.php has all functionality before deleting"
+        }
+      ]
+    },
+    "migration_scripts": {
+      "count": 3,
+      "size_kb": 4.8,
+      "files": [
+        {
+          "path": "./migrate_projects.php",
+          "size_kb": 2.8,
+          "reason": "One-time migration script",
+          "action": "ARCHIVE",
+          "priority": "LOW",
+          "note": "Keep for reference but move to /scripts/migrations/"
+        },
+        {
+          "path": "./migrate_projects_community.php",
+          "size_kb": 0.7,
+          "reason": "One-time community migration",
+          "action": "ARCHIVE",
+          "priority": "LOW"
+        },
+        {
+          "path": "./migrate_slug_index.php",
+          "size_kb": 1.5,
+          "reason": "One-time slug migration",
+          "action": "ARCHIVE",
+          "priority": "LOW"
+        }
+      ]
+    },
+    "unused_css_modes": {
+      "count": 2,
+      "size_kb": 13.0,
+      "files": [
+        {
+          "path": "./styles/bootstrap-mode.css",
+          "size_kb": 7.4,
+          "reason": "Bootstrap mode styles, not used in new editor (Bootstrap forbidden in editor)",
+          "action": "DELETE",
+          "priority": "HIGH",
+          "note": "Bootstrap only allowed in preview components, not editor UI"
+        },
+        {
+          "path": "./styles/tailwind-mode.css",
+          "size_kb": 5.5,
+          "reason": "Tailwind mode styles, redundant with CDN (will be removed)",
+          "action": "DELETE",
+          "priority": "HIGH"
+        }
+      ]
+    },
+    "documentation_in_russian": {
+      "count": 8,
+      "size_kb": 50.0,
+      "files": [
+        {
+          "path": "./ИСПРАВЛЕНИЕ_AI_HELPER.md",
+          "size_kb": 5.4,
+          "reason": "Russian documentation files, should be in /docs/ folder",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./ИСПРАВЛЕНИЕ_TEMPLATES.md",
+          "size_kb": 3.8,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./ИСПРАВЛЕНИЕ_МОДАЛЬНЫХ_ОКОН.md",
+          "size_kb": 4.5,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./ИСПРАВЛЕНИЕ_ОТСТУПОВ.md",
+          "size_kb": 5.8,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./ИСПРАВЛЕНИЕ_ОШИБКИ_DATABASE.md",
+          "size_kb": 1.4,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./ИСПРАВЛЕНИЕ_СЛИПШИХСЯ_ЭЛЕМЕНТОВ.md",
+          "size_kb": 7.5,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./КАК_ИСПОЛЬЗОВАТЬ_TEMPLATES_В_КОНСТРУКТОРЕ.md",
+          "size_kb": 6.9,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        },
+        {
+          "path": "./КАК_ПОЛЬЗОВАТЬСЯ_TEMPLATES.md",
+          "size_kb": 6.8,
+          "reason": "Russian documentation",
+          "action": "MOVE",
+          "target": "./docs/ru/",
+          "priority": "LOW"
+        }
+      ],
+      "note": "Additional Russian docs found but not listed: КРАСИВОЕ_МОДАЛЬНОЕ_ОКНО.md, ПРОСТАЯ_СИСТЕМА_COMMUNITY.md, etc."
+    }
+  },
+  "recommendations": {
+    "immediate_actions": [
+      "Delete all debug_* and test_* files (30.8 KB)",
+      "Remove bootstrap-mode.css and tailwind-mode.css (13.0 KB)",
+      "Archive backup files to git history only (163.6 KB)"
+    ],
+    "organizational": [
+      "Create /docs/ru/ folder and move Russian documentation",
+      "Create /scripts/migrations/ for one-time migration scripts",
+      "Create /archive/ folder for legacy files if needed"
+    ],
+    "dependencies_to_remove": [
+      "jQuery library (will be replaced with vanilla JS)",
+      "TailwindCSS CDN (will be replaced with minimal custom CSS)",
+      "Bootstrap 5 references in editor (forbidden per requirements)"
+    ]
+  },
+  "performance_gains": {
+    "disk_space_freed": "~210 KB from deletions",
+    "reduced_confusion": "Cleaner project structure, easier navigation",
+    "faster_search": "Less noise in grep/find operations",
+    "reduced_dependencies": "Removing jQuery (~30KB min) and Tailwind CDN (~3MB) will significantly improve load time"
+  },
+  "safety_notes": [
+    "All files are in git, can be recovered if needed",
+    "Test thoroughly after cleanup",
+    "Keep database migration SQL files (add_language*.sql, etc.)",
+    "Do not delete API endpoints in /api/ folder",
+    "Do not delete active component files in /components/"
+  ]
+}
