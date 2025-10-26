@@ -1,0 +1,488 @@
+{
+  "document_title": "Information Architecture - BEFORE Restructuring",
+  "date": "2024-10-26",
+  "editor_version": "current",
+  "overview": {
+    "main_file": "index.php",
+    "size": "91KB (2682 lines)",
+    "dependencies": {
+      "css": ["styles/main.css (28KB)", "TailwindCSS CDN (~3MB)"],
+      "js": ["scripts/main.js (100KB)", "jQuery library"],
+      "fonts": ["Google Fonts (Open Sans, Roboto, Inter)"],
+      "icons": ["Google Material Icons", "Custom SVG in images/icons/"]
+    }
+  },
+  "layout_structure": {
+    "type": "multi-panel-desktop-only",
+    "zones": [
+      {
+        "name": "header",
+        "class": ".header",
+        "position": "top-fixed",
+        "height": "~60px",
+        "components": [
+          "Logo (images/icons/logo.svg)",
+          "User display name",
+          "Profile link"
+        ],
+        "responsive": false
+      },
+      {
+        "name": "left_sidebar",
+        "class": ".general_sidebar_left",
+        "position": "left-fixed",
+        "width": "~200px",
+        "components": [
+          "Dashboard navigation",
+          "Home button",
+          "Logout button"
+        ],
+        "responsive": false,
+        "issues": ["No mobile collapse", "Fixed width"]
+      },
+      {
+        "name": "top_menu",
+        "class": ".general_menu",
+        "position": "below-header",
+        "components": [
+          {
+            "group": "device_views",
+            "class": ".general_views",
+            "buttons": ["Desktop (active)", "Mobile"],
+            "functionality": "Device preview switcher (incomplete)"
+          },
+          {
+            "group": "action_buttons",
+            "class": ".general_add_buttons",
+            "buttons": [
+              "Add Element (#addElementBtn)",
+              "New Project (#newProjectBtn)",
+              "Load Project (#loadBtn)",
+              "Edit Mode (#editBtn, hidden)",
+              "Save (#saveBtn)",
+              "Deploy (#deployBtn)",
+              "Export (#exportBtn)",
+              "AI Helper (#aiHelperBtn)",
+              "Share to Community (#saveToLibraryBtn)"
+            ],
+            "issues": ["Too many buttons", "Poor mobile layout", "No tooltips", "Unclear hierarchy"]
+          }
+        ]
+      },
+      {
+        "name": "canvas",
+        "class": ".general_canva",
+        "position": "center",
+        "behavior": "Main editing area where elements are added",
+        "features": {
+          "drag_and_drop": "Limited (elements added via click)",
+          "selection": "Yes (via inspector)",
+          "multi_select": false,
+          "grid": false,
+          "rulers": false,
+          "snapping": false,
+          "zoom": false,
+          "undo_redo": false
+        },
+        "issues": [
+          "No visual grid/guides",
+          "No transform controls",
+          "No inline editing indicators",
+          "No responsive preview",
+          "Test button hardcoded in HTML"
+        ],
+        "current_content": "Static test button (lines 139-142)"
+      },
+      {
+        "name": "right_sidebar",
+        "class": ".general_sidebar_right",
+        "position": "right-fixed",
+        "width": "~280px",
+        "sections": [
+          {
+            "name": "element_library",
+            "class": ".general_sidebar_library",
+            "title": "Elements / Library",
+            "elements": [
+              {
+                "type": "group",
+                "icon": "images/icons/block.svg",
+                "label": "Group"
+              },
+              {
+                "type": "text",
+                "icon": "images/icons/text.svg",
+                "label": "Text"
+              },
+              {
+                "type": "button",
+                "icon": "images/icons/click.svg",
+                "label": "Button"
+              },
+              {
+                "type": "image",
+                "icon": "images/icons/frame.svg",
+                "label": "Image"
+              },
+              {
+                "type": "product",
+                "icon": "images/icons/frame.svg",
+                "label": "Product"
+              },
+              {
+                "type": "block",
+                "icon": "images/icons/block.svg",
+                "label": "Block"
+              },
+              {
+                "type": "link",
+                "icon": "images/icons/link.svg",
+                "label": "Link"
+              },
+              {
+                "type": "list",
+                "icon": "images/icons/list.svg",
+                "label": "List"
+              },
+              {
+                "type": "separator",
+                "icon": "images/icons/sep.svg",
+                "label": "Separator",
+                "width": "full"
+              },
+              {
+                "type": "product-card",
+                "icon": "images/icons/block.svg",
+                "label": "Product Card"
+              }
+            ],
+            "features": {
+              "categories": false,
+              "search": false,
+              "drag_drop": false,
+              "preview": false
+            },
+            "issues": [
+              "Limited element types (only 10)",
+              "No categories/organization",
+              "No search functionality",
+              "No drag-and-drop",
+              "No element previews",
+              "Inconsistent naming (group vs block)"
+            ]
+          },
+          {
+            "name": "inspector",
+            "id": "#inspector",
+            "display": "none (shown when element selected)",
+            "title": "Inspector / Edit Selected",
+            "components": [
+              "Target element indicator (#inspectorTarget)",
+              "Dynamic fields container (#inspectorFields)",
+              "Action buttons (Deselect, Delete)"
+            ],
+            "features": {
+              "tabs": false,
+              "visual_box_model": false,
+              "color_picker": false,
+              "unit_switcher": false,
+              "responsive_overrides": false
+            },
+            "issues": [
+              "No box model visualization",
+              "No padding/margin visual controls",
+              "No typography controls",
+              "No accessibility fields",
+              "Fields generated dynamically (unclear structure)",
+              "No tabs/organization"
+            ]
+          }
+        ],
+        "behavior": {
+          "mobile": "Overlay with close button",
+          "desktop": "Always visible"
+        }
+      }
+    ]
+  },
+  "modals": [
+    {
+      "id": "saveModal",
+      "title": "Save Project",
+      "trigger": "#saveBtn",
+      "fields": ["projectName (input)"],
+      "actions": ["Cancel", "Save"],
+      "issues": ["Simple text input, no validation", "No autosave indicator"]
+    },
+    {
+      "id": "deployModal",
+      "title": "Deploy Project",
+      "trigger": "#deployBtn",
+      "fields": [
+        "deployProjectName (input)",
+        "deployProjectSlug (input with prefix)",
+        "deployPrivacy (select: public/unlisted/private)"
+      ],
+      "actions": ["Cancel", "Deploy"],
+      "features": ["URL preview", "Slug validation"],
+      "issues": ["Complex UI for first-time users", "No deployment status feedback"]
+    },
+    {
+      "id": "loadModal",
+      "title": "Load Project",
+      "trigger": "#loadBtn",
+      "content": "List of saved projects (dynamically loaded)",
+      "actions": ["Cancel", "Load selected"],
+      "issues": ["No preview thumbnails", "No search/filter", "No sorting options"]
+    },
+    {
+      "id": "editModal",
+      "title": "Edit Mode",
+      "trigger": "#editBtn (hidden)",
+      "purpose": "Unknown/incomplete feature",
+      "issues": ["Hidden by default", "Purpose unclear"]
+    },
+    {
+      "id": "aiHelperModal",
+      "title": "AI Helper",
+      "trigger": "#aiHelperBtn",
+      "fields": [
+        "aiDescription (textarea)",
+        "aiStyle (select: modern/minimal/creative/professional)"
+      ],
+      "features": ["Thinking loader with progress bar", "Cancel button"],
+      "actions": ["Cancel", "Generate"],
+      "issues": ["AI integration incomplete", "No error handling", "Unclear what it generates"]
+    },
+    {
+      "id": "saveToLibraryModal",
+      "title": "Share to Community",
+      "trigger": "#saveToLibraryBtn",
+      "fields": [
+        "templateName (input)",
+        "templateDescription (textarea)",
+        "templateCategory (select)"
+      ],
+      "actions": ["Cancel", "Save Template"],
+      "issues": ["Uses TailwindCSS classes", "Complex inline generation"]
+    }
+  ],
+  "javascript_architecture": {
+    "file": "scripts/main.js",
+    "size": "100KB (2331 lines)",
+    "structure": "monolithic",
+    "dependencies": ["jQuery ($ everywhere)"],
+    "key_functions": [
+      "saveProject(projectTitle)",
+      "serializeCanvasOuterHtml()",
+      "showNotification(message, type)",
+      "saveProjectState()",
+      "getCurrentProjectId()",
+      "showAIThinkingLoader()",
+      "hideAIThinkingLoader()",
+      "showSaveToLibraryModal()",
+      "createProjectFromCommunity(projectData)"
+    ],
+    "patterns": {
+      "dom_manipulation": "jQuery ($)",
+      "event_handling": "jQuery .on(), .click()",
+      "ajax": "fetch() API (good!)",
+      "state_management": "localStorage (basic)",
+      "animation": "jQuery .fadeOut(), etc."
+    },
+    "issues": [
+      "Monolithic 100KB file",
+      "Heavy jQuery dependency (forbidden per requirements)",
+      "No module system",
+      "No separation of concerns",
+      "Global functions",
+      "No code splitting",
+      "Difficult to maintain"
+    ]
+  },
+  "css_architecture": {
+    "file": "styles/main.css",
+    "size": "28KB (1617 lines)",
+    "structure": "flat",
+    "methodology": "BEM-like naming (.general_sidebar_left_block)",
+    "variables": {
+      "colors": ["--white", "--black", "--light_gray", "--corp (#1A1C36)", "--accent", "--dark_gray", "--gray"],
+      "typography": ["--h1 through --note (fixed px values)"],
+      "fonts": ["Multiple font family variables (opens, roboto, inter, etc.)"]
+    },
+    "issues": [
+      "No CSS custom properties for spacing",
+      "Fixed pixel font sizes",
+      "No responsive breakpoints",
+      "Global reset may affect preview content",
+      "No namespace/scoping",
+      "No CSS Grid/Flexbox utilities",
+      "Heavy reliance on specific class names"
+    ]
+  },
+  "element_data_model": {
+    "storage": "Database + localStorage",
+    "structure": "Unknown (generated dynamically in main.js)",
+    "serialization": "outerHTML of .general_canva",
+    "issues": [
+      "No clear schema",
+      "No version control",
+      "No element IDs",
+      "No hierarchical structure",
+      "Difficult to query/modify",
+      "No undo/redo support"
+    ]
+  },
+  "user_interactions": {
+    "add_element": {
+      "trigger": "Click on .general_sidebar_element",
+      "behavior": "Element added to canvas (jQuery)",
+      "issues": ["No drag-and-drop", "No position control", "No preview"]
+    },
+    "select_element": {
+      "trigger": "Click on canvas element",
+      "behavior": "Inspector panel shows",
+      "issues": ["No multi-select", "No visual selection indicator", "No bounding box"]
+    },
+    "edit_element": {
+      "method": "Inspector fields",
+      "behavior": "Dynamic field generation",
+      "issues": ["No inline editing", "No visual feedback", "Unclear field types"]
+    },
+    "delete_element": {
+      "trigger": "Inspector delete button",
+      "confirmation": false,
+      "undo": false
+    },
+    "save_project": {
+      "trigger": "#saveBtn",
+      "method": "Serialize canvas to HTML string",
+      "api": "api/project_save.php",
+      "issues": ["No autosave", "No conflict resolution", "No version history"]
+    }
+  },
+  "missing_features": {
+    "critical": [
+      "Drag-and-drop from library to canvas",
+      "Visual padding/margin controls (Webflow-style box model)",
+      "Canvas grid and rulers",
+      "Snapping to grid/elements",
+      "Zoom controls",
+      "Undo/Redo",
+      "Multi-element selection",
+      "Element hierarchy/tree view",
+      "Responsive breakpoint editing",
+      "Keyboard shortcuts"
+    ],
+    "important": [
+      "Element search in library",
+      "Element categories",
+      "Copy/paste elements",
+      "Duplicate element",
+      "Element locking",
+      "Layer ordering (z-index)",
+      "Align/distribute tools",
+      "Element naming",
+      "Component creation",
+      "Style presets"
+    ],
+    "nice_to_have": [
+      "History panel",
+      "Asset manager",
+      "Global styles",
+      "Design tokens",
+      "Collaboration features",
+      "Comments/annotations",
+      "A/B testing variants",
+      "Performance insights"
+    ]
+  },
+  "accessibility_status": {
+    "keyboard_navigation": "Partial",
+    "screen_reader": "Poor",
+    "focus_indicators": "None",
+    "aria_labels": "Minimal",
+    "semantic_html": "Fair",
+    "score": "35/100"
+  },
+  "mobile_readiness": {
+    "responsive_layout": false,
+    "touch_targets": "Too small (<44px)",
+    "touch_gestures": false,
+    "mobile_navigation": false,
+    "viewport_optimization": false,
+    "score": "15/100"
+  },
+  "performance_metrics": {
+    "initial_load": {
+      "html": "91KB (gzipped ~15KB)",
+      "css": "~3MB (TailwindCSS CDN) + 28KB (main.css)",
+      "js": "~30KB (jQuery min) + 100KB (main.js)",
+      "fonts": "~200KB (Google Fonts)",
+      "total": "~3.5MB estimated"
+    },
+    "issues": [
+      "Huge TailwindCSS CDN load",
+      "jQuery dependency",
+      "Monolithic JavaScript",
+      "No code splitting",
+      "No lazy loading",
+      "Blocking font loads"
+    ],
+    "estimated_lighthouse": "40-50 (mobile)"
+  },
+  "integration_points": {
+    "apis": [
+      "api/project_save.php (POST - save project)",
+      "api/projects_community.php (POST - share to community)",
+      "api/save_project.php (POST - create project from community)",
+      "api/save_element.php (POST - save individual element)"
+    ],
+    "libraries": [
+      "lib/auth.php (authentication)",
+      "lib/db.php (database connection)",
+      "lib/language.php (i18n)",
+      "lib/html_generator.php (HTML generation utilities)"
+    ],
+    "components": [
+      "components/loading-screen.php",
+      "components/templates_ultra_simple.php"
+    ]
+  },
+  "hotkeys": {
+    "implemented": ["Escape (close modals)"],
+    "missing": [
+      "Ctrl+S (save)",
+      "Ctrl+Z (undo)",
+      "Ctrl+Shift+Z (redo)",
+      "Ctrl+C (copy)",
+      "Ctrl+V (paste)",
+      "Ctrl+D (duplicate)",
+      "Delete (remove element)",
+      "Ctrl+A (select all)",
+      "Arrow keys (move element)",
+      "Tab (next element)"
+    ]
+  },
+  "summary": {
+    "strengths": [
+      "Solid backend integration",
+      "Multi-language support",
+      "AI helper integration started",
+      "Community sharing feature",
+      "Clean color scheme (corp: #1A1C36)"
+    ],
+    "weaknesses": [
+      "jQuery dependency (must be removed)",
+      "No mobile responsiveness",
+      "Limited element library",
+      "No visual editing tools (grid, rulers, snapping)",
+      "No Webflow-style box model controls",
+      "Monolithic code structure",
+      "Poor accessibility",
+      "No drag-and-drop",
+      "No undo/redo"
+    ],
+    "restructuring_priority": "HIGH - Complete rewrite of editor interface required"
+  }
+}

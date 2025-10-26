@@ -1,0 +1,79 @@
+# JSB Website Builder - Git Ignore File
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Environment Files
+.env
+.env.local
+.env.*.local
+
+# Database Credentials
+config/database.php
+database.php
+
+# User Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+*.log
+logs/
+error_log
+debug.log
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# PHP
+vendor/
+composer.phar
+composer.lock
+
+# Node (if ever added)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Build artifacts
+dist/
+build/
+
+# Cache
+cache/
+*.cache
+
+# Session files
+sessions/
+
+# Backup files
+*_backup.*
+*_old.*
+*.bak
+
+# Test files (keep in repo for reference, but ignore local test results)
+# test-*.html (intentionally kept in repo)
+
+# Keep important files
+!.htaccess
+!robots.txt
