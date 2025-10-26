@@ -64,7 +64,7 @@ function extractCanvasFromHTML($html) {
     $htmlWithEncoding = '<?xml encoding="UTF-8">' . $html;
     $dom->loadHTML($htmlWithEncoding, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
     
-    // Find elements with class containing "general_canva"
+    // Find elements with class containing "general_canva" (legacy)
     $xpath = new DOMXPath($dom);
     $canvasNodes = $xpath->query('//div[contains(@class, "general_canva")]');
     
@@ -77,9 +77,14 @@ function extractCanvasFromHTML($html) {
         return trim($innerHTML);
     }
     
-    // Fallback: try regex approach for export_container
+    // Try to find export_container (current system)
     if (preg_match('/<div[^>]*class="[^"]*export_container[^"]*"[^>]*>(.*?)<\/div>/s', $html, $matches)) {
         return trim($matches[1]);
+    }
+    
+    // Try to find elements with data-element-id (new editor)
+    if (preg_match_all('/<div[^>]*data-element-id="[^"]*"[^>]*>.*?<\/div>/s', $html, $matches)) {
+        return implode('', $matches[0]);
     }
     
     // Fallback: collect all elements with el_ classes using more precise regex
@@ -88,7 +93,7 @@ function extractCanvasFromHTML($html) {
     }
     
     // More aggressive fallback: find all div elements that look like components
-    if (preg_match_all('/<div[^>]*(?:class="[^"]*el_|data-id=)[^>]*>.*?<\/div>/s', $html, $matches)) {
+    if (preg_match_all('/<div[^>]*(?:class="[^"]*el_|data-id=|data-element-id=)[^>]*>.*?<\/div>/s', $html, $matches)) {
         return implode('', $matches[0]);
     }
     
@@ -109,7 +114,9 @@ function extractCanvasFromHTML($html) {
 // Function to validate and sanitize canvas content
 function sanitizeCanvasContent($canvas) {
     // Don't sanitize if the content looks like it contains valid elements
-    if (strpos($canvas, 'class="el_') !== false || strpos($canvas, 'data-id=') !== false) {
+    if (strpos($canvas, 'class="el_') !== false || 
+        strpos($canvas, 'data-id=') !== false || 
+        strpos($canvas, 'data-element-id=') !== false) {
         // Just trim whitespace for valid canvas content
         return trim($canvas);
     }

@@ -18,6 +18,7 @@ class EditorCanvas {
     this.snappingEnabled = true;
     this.isDragging = false;
     this.dragOffset = { x: 0, y: 0 };
+    this.firstElementAdded = localStorage.getItem('jsb_first_element_added') === 'true';
     
     this.init();
   }
@@ -99,24 +100,34 @@ class EditorCanvas {
   updateRulers() {
     if (!this.rulersEnabled || !this.hRuler) return;
     
-    // Draw horizontal ruler ticks
+    // Draw horizontal ruler ticks with better styling
     const canvasWidth = this.content.offsetWidth;
     const hMarks = [];
-    for (let i = 0; i <= canvasWidth; i += 50) {
-      hMarks.push(`<span style="position:absolute;left:${i}px;height:8px;width:1px;background:#757575;"></span>`);
-      if (i % 100 === 0) {
-        hMarks.push(`<span style="position:absolute;left:${i + 2}px;top:2px;">${i}</span>`);
+    for (let i = 0; i <= canvasWidth; i += 10) {
+      const isLarge = i % 100 === 0;
+      const isMedium = i % 50 === 0;
+      const height = isLarge ? '12px' : (isMedium ? '8px' : '4px');
+      const opacity = isLarge ? '1' : (isMedium ? '0.8' : '0.4');
+      
+      hMarks.push(`<span style="position:absolute;left:${i}px;bottom:0;height:${height};width:1px;background:#757575;opacity:${opacity};"></span>`);
+      if (isLarge) {
+        hMarks.push(`<span style="position:absolute;left:${i + 3}px;top:2px;font-size:9px;color:#424242;font-family:monospace;">${i}</span>`);
       }
     }
     this.hRuler.innerHTML = hMarks.join('');
     
-    // Draw vertical ruler ticks
+    // Draw vertical ruler ticks with better styling
     const canvasHeight = this.content.offsetHeight;
     const vMarks = [];
-    for (let i = 0; i <= canvasHeight; i += 50) {
-      vMarks.push(`<span style="position:absolute;top:${i}px;width:8px;height:1px;background:#757575;"></span>`);
-      if (i % 100 === 0) {
-        vMarks.push(`<span style="position:absolute;top:${i + 2}px;left:2px;writing-mode:vertical-lr;transform:rotate(180deg);">${i}</span>`);
+    for (let i = 0; i <= canvasHeight; i += 10) {
+      const isLarge = i % 100 === 0;
+      const isMedium = i % 50 === 0;
+      const width = isLarge ? '12px' : (isMedium ? '8px' : '4px');
+      const opacity = isLarge ? '1' : (isMedium ? '0.8' : '0.4');
+      
+      vMarks.push(`<span style="position:absolute;top:${i}px;right:0;width:${width};height:1px;background:#757575;opacity:${opacity};"></span>`);
+      if (isLarge) {
+        vMarks.push(`<span style="position:absolute;top:${i + 3}px;left:2px;font-size:9px;color:#424242;font-family:monospace;writing-mode:vertical-lr;transform:rotate(180deg);">${i}</span>`);
       }
     }
     this.vRuler.innerHTML = vMarks.join('');
@@ -183,6 +194,34 @@ class EditorCanvas {
           e.stopPropagation();
           this.selectElement(element);
         }
+      }
+    });
+    
+    // Touch support for mobile
+    let touchStartY = 0;
+    let touchElement = null;
+    
+    this.content.addEventListener('touchstart', (e) => {
+      const element = e.target.closest('[data-element-id]');
+      if (element) {
+        touchStartY = e.touches[0].clientY;
+        touchElement = element;
+        element.style.opacity = '0.7';
+      }
+    }, { passive: true });
+    
+    this.content.addEventListener('touchmove', (e) => {
+      if (touchElement) {
+        const deltaY = e.touches[0].clientY - touchStartY;
+        touchElement.style.transform = `translateY(${deltaY}px)`;
+      }
+    }, { passive: true });
+    
+    this.content.addEventListener('touchend', (e) => {
+      if (touchElement) {
+        touchElement.style.opacity = '1';
+        touchElement.style.transform = '';
+        touchElement = null;
       }
     });
     
@@ -293,6 +332,16 @@ class EditorCanvas {
     this.content.appendChild(element);
     this.selectElement(element);
     
+    // Hide first-time tip
+    if (!this.firstElementAdded) {
+      this.firstElementAdded = true;
+      localStorage.setItem('jsb_first_element_added', 'true');
+      const emptyState = this.content.querySelector('[style*="text-align: center"]');
+      if (emptyState) {
+        emptyState.style.display = 'none';
+      }
+    }
+    
     this.dispatchEvent('elementAdded', { element, type });
     
     return element;
@@ -351,7 +400,8 @@ class EditorCanvas {
         `;
         break;
       case 'video':
-        element.innerHTML = '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000;"><div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;">Video Placeholder</div></div>';
+        element.innerHTML = '<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000;" data-video-container><div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center;">Video Placeholder<br><small style="font-size:12px;">Add YouTube/Vimeo URL in inspector</small></div></div>';
+        element.dataset.videoUrl = '';
         break;
       case 'badge':
         element.innerHTML = '<span style="display: inline-block; padding: 4px 12px; background: #3B82F6; color: white; border-radius: 12px; font-size: 12px;">Badge</span>';
