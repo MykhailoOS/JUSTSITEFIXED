@@ -11,8 +11,10 @@ class EditorLibrary {
     this.elementsContainer = null;
     this.currentCategory = 'all';
     this.searchTerm = '';
+    this.currentTab = 'elements'; // 'elements' or 'templates'
     
     this.elements = this.getElementDefinitions();
+    this.templates = this.getTemplateDefinitions();
     
     this.init();
   }
@@ -256,24 +258,38 @@ class EditorLibrary {
     if (!sidebar) return;
     
     sidebar.innerHTML = `
-      <div class="jsb-library__search">
-        <div class="jsb-search">
-          <svg class="jsb-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="M21 21l-4.35-4.35"/>
-          </svg>
-          <input 
-            type="text" 
-            class="jsb-search__input" 
-            placeholder="Search elements..." 
-            aria-label="Search elements"
-          >
-        </div>
+      <div style="display: flex; border-bottom: 1px solid #E0E0E0;">
+        <button class="jsb-library__tab ${this.currentTab === 'elements' ? 'jsb-library__tab--active' : ''}" data-tab="elements" style="flex: 1; padding: 12px; border: none; background: ${this.currentTab === 'elements' ? '#F8F9FA' : 'transparent'}; cursor: pointer; font-weight: ${this.currentTab === 'elements' ? '600' : '400'}; border-bottom: 2px solid ${this.currentTab === 'elements' ? '#3B82F6' : 'transparent'};">Elements</button>
+        <button class="jsb-library__tab ${this.currentTab === 'templates' ? 'jsb-library__tab--active' : ''}" data-tab="templates" style="flex: 1; padding: 12px; border: none; background: ${this.currentTab === 'templates' ? '#F8F9FA' : 'transparent'}; cursor: pointer; font-weight: ${this.currentTab === 'templates' ? '600' : '400'}; border-bottom: 2px solid ${this.currentTab === 'templates' ? '#3B82F6' : 'transparent'};">Templates</button>
       </div>
       
-      <div class="jsb-library__categories" id="libraryCategories">
-        ${this.renderCategories()}
-      </div>
+      ${this.currentTab === 'elements' ? `
+        <div class="jsb-library__search">
+          <div class="jsb-search">
+            <svg class="jsb-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input 
+              type="text" 
+              class="jsb-search__input" 
+              placeholder="Search elements..." 
+              aria-label="Search elements"
+            >
+          </div>
+        </div>
+        
+        <div class="jsb-library__categories" id="libraryCategories">
+          ${this.renderCategories()}
+        </div>
+      ` : `
+        <div style="padding: 16px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 14px; font-weight: 600;">Landing Page Templates</h3>
+          <div class="jsb-library__templates" id="libraryTemplates">
+            ${this.renderTemplates()}
+          </div>
+        </div>
+      `}
     `;
     
     this.searchInput = sidebar.querySelector('.jsb-search__input');
@@ -347,10 +363,73 @@ class EditorLibrary {
     return elements;
   }
   
+  getTemplateDefinitions() {
+    return [
+      {
+        id: 'hero-landing',
+        name: 'Hero Landing',
+        description: 'Simple hero section with CTA',
+        thumbnail: '<div style="background:#3B82F6;height:40px;"></div><div style="background:#F8F9FA;height:60px;"></div>'
+      },
+      {
+        id: 'service-page',
+        name: 'Services Page',
+        description: 'Three-column service layout',
+        thumbnail: '<div style="background:#3B82F6;height:30px;"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;background:#F8F9FA;padding:8px;"><div style="background:#E0E0E0;height:50px;"></div><div style="background:#E0E0E0;height:50px;"></div><div style="background:#E0E0E0;height:50px;"></div></div>'
+      },
+      {
+        id: 'contact-form',
+        name: 'Contact Form',
+        description: 'Contact page with form',
+        thumbnail: '<div style="background:#3B82F6;height:30px;"></div><div style="background:#F8F9FA;padding:8px;"><div style="background:#E0E0E0;height:15px;margin-bottom:4px;"></div><div style="background:#E0E0E0;height:15px;margin-bottom:4px;"></div><div style="background:#3B82F6;height:20px;"></div></div>'
+      }
+    ];
+  }
+  
+  renderTemplates() {
+    return this.templates.map(template => `
+      <div class="jsb-library__template" data-template-id="${template.id}" style="margin-bottom: 12px; padding: 12px; border: 1px solid #E0E0E0; border-radius: 6px; cursor: pointer; transition: all 0.15s;">
+        <div class="jsb-library__template-thumbnail" style="margin-bottom: 8px; border-radius: 4px; overflow: hidden; height: 100px; border: 1px solid #E0E0E0;">
+          ${template.thumbnail}
+        </div>
+        <div class="jsb-library__template-name" style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${template.name}</div>
+        <div class="jsb-library__template-description" style="font-size: 12px; color: #757575;">${template.description}</div>
+      </div>
+    `).join('');
+  }
+  
   setupEventListeners() {
+    // Tab switching
+    this.library.addEventListener('click', (e) => {
+      const tab = e.target.closest('.jsb-library__tab');
+      if (tab) {
+        this.currentTab = tab.dataset.tab;
+        this.render();
+        this.setupEventListeners(); // Re-attach after render
+        return;
+      }
+      
+      // Template click
+      const template = e.target.closest('.jsb-library__template');
+      if (template) {
+        const templateId = template.dataset.templateId;
+        this.dispatchEvent('templateAdd', { templateId });
+        return;
+      }
+      
+      // Element click
+      const card = e.target.closest('.jsb-library__element');
+      if (card) {
+        const elementType = card.dataset.elementType;
+        this.dispatchEvent('elementAdd', { type: elementType });
+        return;
+      }
+    });
+    
     // Search input
-    if (this.searchInput) {
-      this.searchInput.addEventListener('input', (e) => {
+    const searchInput = this.library.querySelector('.jsb-search__input');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
         this.searchTerm = e.target.value;
         this.updateDisplay();
       });
@@ -373,15 +452,6 @@ class EditorLibrary {
       if (!card) return;
       
       card.classList.remove('jsb-library__element--dragging');
-    });
-    
-    // Click to add (alternative to drag)
-    this.library.addEventListener('click', (e) => {
-      const card = e.target.closest('.jsb-library__element');
-      if (!card) return;
-      
-      const elementType = card.dataset.elementType;
-      this.dispatchEvent('elementAdd', { type: elementType });
     });
     
     // Keyboard support

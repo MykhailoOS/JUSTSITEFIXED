@@ -127,7 +127,13 @@ class EditorInspector {
       if (img) {
         fields += this.renderField('Image URL', 'input', 'url', img.src, 'imageSrc');
         fields += this.renderField('Alt Text', 'input', 'text', img.alt, 'imageAlt');
+        fields += '<p style="font-size:12px;color:#757575;margin:8px 0;">Upload image: <input type="file" accept="image/*" id="imageUpload" style="font-size:12px;"></p>';
       }
+    }
+    
+    if (type === 'video') {
+      const videoUrl = el.dataset.videoUrl || '';
+      fields += this.renderField('Video URL', 'input', 'url', videoUrl, 'videoUrl', false, 'YouTube or Vimeo URL');
     }
     
     if (type === 'button') {
@@ -426,6 +432,14 @@ class EditorInspector {
         }
       });
     }
+    
+    // Image upload
+    const imageUpload = body.querySelector('#imageUpload');
+    if (imageUpload) {
+      imageUpload.addEventListener('change', (e) => {
+        this.handleImageUpload(e.target);
+      });
+    }
   }
   
   handleInputChange(input) {
@@ -446,6 +460,10 @@ class EditorInspector {
       case 'imageAlt':
         const imgAlt = this.selectedElement.querySelector('img');
         if (imgAlt) imgAlt.alt = value;
+        break;
+      case 'videoUrl':
+        this.selectedElement.dataset.videoUrl = value;
+        this.updateVideoEmbed(value);
         break;
       case 'ariaLabel':
         if (value) this.selectedElement.setAttribute('aria-label', value);
@@ -504,6 +522,70 @@ class EditorInspector {
     // Re-render to update inputs
     this.render();
     this.dispatchEvent('presetApplied', { preset, value });
+  }
+  
+  updateVideoEmbed(url) {
+    if (!this.selectedElement) return;
+    
+    const container = this.selectedElement.querySelector('[data-video-container]');
+    if (!container) return;
+    
+    // Extract video ID and platform
+    let embedUrl = '';
+    
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const videoId = this.extractYouTubeId(url);
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    } else if (url.includes('vimeo.com')) {
+      const videoId = this.extractVimeoId(url);
+      if (videoId) {
+        embedUrl = `https://player.vimeo.com/video/${videoId}`;
+      }
+    }
+    
+    if (embedUrl) {
+      container.innerHTML = `<iframe src="${embedUrl}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe>`;
+    } else {
+      container.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center;">Invalid video URL<br><small style="font-size:12px;">Please enter a valid YouTube or Vimeo URL</small></div>';
+    }
+  }
+  
+  extractYouTubeId(url) {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+      /youtube\.com\/embed\/([^&\n?#]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  }
+  
+  extractVimeoId(url) {
+    const pattern = /vimeo\.com\/(\d+)/;
+    const match = url.match(pattern);
+    return match ? match[1] : null;
+  }
+  
+  handleImageUpload(fileInput) {
+    const file = fileInput.files[0];
+    if (!file || !this.selectedElement) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = this.selectedElement.querySelector('img');
+      if (img) {
+        img.src = e.target.result;
+        // Update the URL input too
+        const urlInput = document.querySelector('#inspector_imageSrc');
+        if (urlInput) urlInput.value = 'data:image (uploaded)';
+      }
+    };
+    reader.readAsDataURL(file);
   }
   
   dispatchEvent(eventName, detail = {}) {
