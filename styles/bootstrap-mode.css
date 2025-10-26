@@ -1,0 +1,348 @@
+/* Bootstrap Mode Styles */
+
+/* Reset backgrounds for all elements first */
+body.bootstrap-mode [class*="el_"]:not(.el_hero) {
+	background: transparent !important;
+}
+
+body.bootstrap-mode [class*="el_"]:not(.el_hero):not(.el_product):not(.el_group) {
+	background-color: transparent !important;
+}
+
+/* Bootstrap Mode Overrides */
+body.bootstrap-mode .el_button {
+	background-color: #0d6efd;
+	color: white;
+	font-weight: 500;
+	padding: 0.375rem 0.75rem;
+	border: 1px solid #0d6efd;
+	border-radius: 0.375rem;
+	transition: all 0.15s ease-in-out;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1rem;
+	line-height: 1.5;
+}
+
+body.bootstrap-mode .el_button:hover {
+	background-color: #0b5ed7;
+	border-color: #0a58ca;
+	transform: none;
+}
+
+body.bootstrap-mode .el_button:active {
+	background-color: #0a58ca;
+	border-color: #0a53be;
+	transform: none;
+}
+
+body.bootstrap-mode .el_text {
+	color: #212529;
+	line-height: 1.5;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+}
+
+body.bootstrap-mode .el_hero {
+	min-height: 100vh;
+	background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 3rem 1.5rem;
+	position: relative;
+	overflow: hidden;
+}
+
+body.bootstrap-mode .el_hero > div {
+	max-width: 800px;
+	width: 100%;
+}
+
+body.bootstrap-mode .el_hero > div > div:first-child {
+	font-size: 3.5rem;
+	font-weight: 700;
+	margin-bottom: 1.5rem;
+	line-height: 1.2;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(2) {
+	font-size: 1.25rem;
+	margin-bottom: 2rem;
+	opacity: 0.9;
+	line-height: 1.6;
+	max-width: 600px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(3) {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-bottom: 3rem;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(3) > a:first-child {
+	background-color: white;
+	color: #0d6efd;
+	font-weight: 600;
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.5rem;
+	transition: all 0.15s ease-in-out;
+	text-decoration: none;
+	border: 2px solid white;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(3) > a:first-child:hover {
+	background-color: #f8f9fa;
+	color: #0b5ed7;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(3) > a:last-child {
+	background-color: transparent;
+	border: 2px solid white;
+	color: white;
+	font-weight: 600;
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.5rem;
+	transition: all 0.15s ease-in-out;
+	text-decoration: none;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(3) > a:last-child:hover {
+	background-color: white;
+	color: #0d6efd;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(4) {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+	flex-wrap: wrap;
+	opacity: 0.8;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(4) > div {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(4) > div > div {
+	width: 1.25rem;
+	height: 1.25rem;
+	background-color: #198754;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 0.75rem;
+	font-weight: 700;
+}
+
+body.bootstrap-mode .el_hero > div > div:nth-child(4) > div > span {
+	font-size: 1rem;
+}
+
+body.bootstrap-mode .el_product {
+	background-color: white;
+	border: 1px solid #dee2e6;
+	border-radius: 0.5rem;
+	padding: 1.5rem;
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+	transition: all 0.15s ease-in-out;
+}
+
+body.bootstrap-mode .el_product:hover {
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px);
+}
+
+body.bootstrap-mode .el_product_title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #212529;
+	margin-bottom: 0.5rem;
+}
+
+body.bootstrap-mode .el_product_desc {
+	color: #6c757d;
+	margin-bottom: 1rem;
+	line-height: 1.5;
+}
+
+body.bootstrap-mode .el_product_price {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #0d6efd;
+	margin-bottom: 1rem;
+}
+
+body.bootstrap-mode .el_product_actions .el_button {
+	background-color: #0d6efd;
+	color: white;
+	font-weight: 500;
+	padding: 0.5rem 1rem;
+	border-radius: 0.375rem;
+	transition: all 0.15s ease-in-out;
+	border: 1px solid #0d6efd;
+	margin-right: 0.5rem;
+}
+
+body.bootstrap-mode .el_product_actions .el_button:hover {
+	background-color: #0b5ed7;
+	border-color: #0a58ca;
+}
+
+body.bootstrap-mode .el_product_actions .el_button:last-child {
+	background-color: transparent;
+	border: 1px solid #6c757d;
+	color: #6c757d;
+}
+
+body.bootstrap-mode .el_product_actions .el_button:last-child:hover {
+	background-color: #6c757d;
+	color: white;
+}
+
+body.bootstrap-mode .general_canva {
+	background-color: #f8f9fa;
+	border: 1px solid #dee2e6;
+}
+
+body.bootstrap-mode .el_image {
+	background-color: #e9ecef;
+	border: 1px solid #ced4da;
+	border-radius: 0.375rem;
+}
+
+body.bootstrap-mode .el_separator {
+	background-color: #dee2e6;
+	height: 1px;
+	border: none;
+}
+
+body.bootstrap-mode .el_link {
+	color: #0d6efd;
+	text-decoration: underline;
+}
+
+body.bootstrap-mode .el_link:hover {
+	color: #0b5ed7;
+}
+
+body.bootstrap-mode .el_list {
+	color: #212529;
+	line-height: 1.5;
+}
+
+body.bootstrap-mode .el_list li {
+	margin-bottom: 0.25rem;
+}
+
+body.bootstrap-mode .el_group {
+	border: 2px dashed #ced4da;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	background-color: #f8f9fa;
+}
+
+/* Bootstrap Header Styles */
+body.bootstrap-mode .el_header {
+	background-color: white !important;
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+	padding: 0.5rem 1rem !important;
+}
+
+body.bootstrap-mode .el_header [data-field="logo"] {
+	color: #212529 !important;
+	font-weight: 700 !important;
+}
+
+body.bootstrap-mode .el_header nav a {
+	color: #495057 !important;
+	font-weight: 500 !important;
+	padding: 0.5rem 1rem !important;
+	border-radius: 0.375rem !important;
+	transition: all 0.15s ease-in-out !important;
+}
+
+body.bootstrap-mode .el_header nav a:hover {
+	color: #0d6efd !important;
+	background-color: #f8f9fa !important;
+}
+
+body.bootstrap-mode .el_header [data-field="cta"] {
+	background-color: #0d6efd !important;
+	color: white !important;
+	border: 1px solid #0d6efd !important;
+	padding: 0.5rem 1rem !important;
+	border-radius: 0.375rem !important;
+}
+
+body.bootstrap-mode .el_header [data-field="cta"]:hover {
+	background-color: #0b5ed7 !important;
+	border-color: #0a58ca !important;
+}
+
+/* Bootstrap Footer Styles */
+body.bootstrap-mode .el_footer {
+	background-color: #212529 !important;
+	color: white !important;
+}
+
+body.bootstrap-mode .el_footer h4 {
+	color: white !important;
+	font-weight: 600 !important;
+}
+
+body.bootstrap-mode .el_footer a {
+	color: #adb5bd !important;
+	transition: color 0.15s ease-in-out !important;
+}
+
+body.bootstrap-mode .el_footer a:hover {
+	color: white !important;
+}
+
+body.bootstrap-mode .el_footer [data-field="copyright"] {
+	color: #6c757d !important;
+	border-top: 1px solid #495057 !important;
+}
+
+/* Bootstrap responsive utilities */
+@media (max-width: 768px) {
+	body.bootstrap-mode .el_hero > div > div:first-child {
+		font-size: 2.5rem;
+	}
+	
+	body.bootstrap-mode .el_hero > div > div:nth-child(2) {
+		font-size: 1.1rem;
+	}
+	
+	body.bootstrap-mode .el_hero > div > div:nth-child(3) {
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+	
+	body.bootstrap-mode .el_hero > div > div:nth-child(4) {
+		flex-direction: column;
+		gap: 1rem;
+	}
+	
+	body.bootstrap-mode .el_header {
+		flex-direction: column !important;
+		gap: 1rem !important;
+	}
+	
+	body.bootstrap-mode .el_header nav {
+		flex-wrap: wrap !important;
+		justify-content: center !important;
+		gap: 0.5rem !important;
+	}
+}

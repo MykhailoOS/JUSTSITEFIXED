@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отладка инлайн редактирования</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .general_canva {
+            border: 2px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+            background-color: #f8f9fa;
+        }
+        
+        .el_text_block {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            background-color: white;
+        }
+        
+        .el_text {
+            color: #333;
+            font-size: 16px;
+            cursor: text;
+        }
+        
+        .el_button_block {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            background-color: white;
+        }
+        
+        .el_button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .el_link_block {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            background-color: white;
+        }
+        
+        .el_link {
+            color: #007bff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .inline-editing {
+            border: 2px solid #007bff !important;
+            background-color: #e7f3ff !important;
+            outline: none;
+        }
+        
+        .edit-completed {
+            background-color: #d4edda !important;
+            transition: background-color 0.8s ease;
+        }
+        
+        .debug-info {
+            background-color: #f1f1f1;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Отладка инлайн редактирования</h1>
+    
+    <div class="debug-info" id="debugLog">
+        <strong>Лог событий:</strong><br>
+    </div>
+    
+    <p><strong>Инструкция:</strong> Сделайте двойной клик на любом элементе ниже. Проверьте лог событий выше.</p>
+    
+    <div class="general_canva">
+        <h3>🎯 Тестовые элементы:</h3>
+        
+        <div class="el_text_block" data-id="1">
+            <div class="el_text">Текст для редактирования (двойной клик)</div>
+        </div>
+        
+        <div class="el_button_block" data-id="2">
+            <a href="#" class="el_button">Кнопка для редактирования</a>
+        </div>
+        
+        <div class="el_link_block" data-id="3">
+            <a href="#" class="el_link">Ссылка для редактирования</a>
+        </div>
+        
+        <div class="el_text_block" data-id="4">
+            <div class="el_text">Второй текстовый элемент</div>
+        </div>
+    </div>
+    
+    <script>
+        // Функция для логирования
+        function logEvent(message) {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.innerHTML += `<br>[${timestamp}] ${message}`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        // Функция для выбора текста
+        function selectElementText(element) {
+            logEvent('📝 Выбираем текст в элементе');
+            if (document.selection) {
+                const range = document.body.createTextRange();
+                range.moveToElementText(element);
+                range.select();
+            } else if (window.getSelection) {
+                const range = document.createRange();
+                range.selectNodeContents(element);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+
+        // Функция startInlineEditing с отладкой
+        function startInlineEditing($element) {
+            logEvent(`🎬 Начинаем редактирование элемента: ${$element.get(0).tagName}.${$element.get(0).className}`);
+            
+            // Add editing class for visual feedback
+            $element.addClass('inline-editing');
+            logEvent('✅ Добавлен класс inline-editing');
+            
+            // Store original content as text only
+            const originalText = $element.text().trim();
+            logEvent(`📄 Оригинальный текст: "${originalText}"`);
+            
+            // Make element editable
+            $element.attr('contenteditable', 'true');
+            $element.focus();
+            logEvent('✏️ Элемент сделан редактируемым и получил фокус');
+            
+            // Select all text for easy replacement
+            selectElementText($element[0]);
+            
+            // Create finish editing function
+            const finishEditing = function(e) {
+                logEvent(`🔚 Завершение редактирования. Событие: ${e ? e.type : 'неизвестно'}, клавиша: ${e && e.key ? e.key : 'нет'}`);
+                
+                // Only finish on blur or Enter key
+                if (e && e.type === 'keydown' && e.key !== 'Enter') {
+                    logEvent('⏩ Пропускаем - не Enter и не blur');
+                    return;
+                }
+                if (e && e.type === 'keydown' && e.key === 'Enter') {
+                    e.preventDefault();
+                    logEvent('⤵️ Enter нажат, предотвращаем перенос строки');
+                }
+                
+                // Remove editing state
+                $element.removeClass('inline-editing');
+                $element.removeAttr('contenteditable');
+                $element.off('.inline-edit');
+                logEvent('🧹 Убрали класс редактирования и события');
+                
+                // Get new text content and clean it
+                const newText = $element.text().trim();
+                logEvent(`📝 Новый текст: "${newText}"`);
+                
+                // Only update if text actually changed
+                if (newText !== originalText && newText !== '') {
+                    $element.text(newText);
+                    logEvent('💾 Текст сохранен (изменился)');
+                    
+                    // Show completion feedback
+                    $element.addClass('edit-completed');
+                    setTimeout(() => {
+                        $element.removeClass('edit-completed');
+                        logEvent('✨ Убрали подсветку завершения');
+                    }, 800);
+                } else if (newText === '') {
+                    // Restore original text if empty
+                    $element.text(originalText);
+                    logEvent('🔄 Восстановили оригинальный текст (был пустым)');
+                } else {
+                    logEvent('➡️ Текст не изменился');
+                }
+            };
+            
+            // Bind finish editing events
+            $element.on('blur.inline-edit keydown.inline-edit', finishEditing);
+            logEvent('🎯 Привязали события blur и keydown');
+            
+            // Handle Escape key to cancel editing
+            $element.on('keydown.inline-edit', function(e) {
+                if (e.key === 'Escape') {
+                    logEvent('❌ Нажат Escape - отменяем редактирование');
+                    $element.text(originalText);
+                    $element.removeClass('inline-editing');
+                    $element.removeAttr('contenteditable');
+                    $element.off('.inline-edit');
+                }
+            });
+        }
+
+        // Инициализация при загрузке документа
+        $(document).ready(function() {
+            logEvent('🚀 DOM готов, настраиваем инлайн редактирование...');
+            
+            const editableSelectors = [
+                '.general_canva .el_text',
+                '.general_canva .el_link',
+                '.general_canva .el_button'
+            ].join(', ');
+            
+            logEvent(`🎯 Селекторы для редактирования: ${editableSelectors}`);
+            
+            // Проверяем наличие элементов
+            const foundElements = $(editableSelectors);
+            logEvent(`🔍 Найдено элементов: ${foundElements.length}`);
+            foundElements.each(function(index) {
+                logEvent(`  ${index + 1}. ${this.tagName}.${this.className} - "${$(this).text().trim()}"`);
+            });
+            
+            // Bind double click events
+            $(document).off('dblclick.debug-inline-edit');
+            $(document).on('dblclick.debug-inline-edit', editableSelectors, function(e) {
+                logEvent(`🖱️ ДВОЙНОЙ КЛИК обнаружен на: ${this.tagName}.${this.className}`);
+                logEvent(`   Текст элемента: "${$(this).text().trim()}"`);
+                logEvent(`   Target: ${e.target.tagName}.${e.target.className}`);
+                
+                e.stopPropagation();
+                const $element = $(this);
+                
+                // Skip if already editing
+                if ($element.hasClass('inline-editing')) {
+                    logEvent('⏸️ Пропускаем - уже редактируется');
+                    return;
+                }
+                
+                // Skip if element has no text content
+                if (!$element.text().trim()) {
+                    logEvent('⏸️ Пропускаем - нет текста');
+                    return;
+                }
+                
+                startInlineEditing($element);
+            });
+            
+            // Также привязываем обычный клик для отладки
+            $(document).on('click.debug', editableSelectors, function(e) {
+                if (e.detail === 1) {
+                    logEvent(`🖱️ Одинарный клик на: ${this.tagName}.${this.className} (detail: ${e.detail})`);
+                } else if (e.detail === 2) {
+                    logEvent(`🖱️ Второй клик в двойном клике на: ${this.tagName}.${this.className} (detail: ${e.detail})`);
+                }
+            });
+            
+            logEvent('✅ Настройка инлайн редактирования завершена');
+        });
+    </script>
+</body>
+</html>

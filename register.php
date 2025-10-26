@@ -1,0 +1,456 @@
+<?php
+require_once __DIR__ . '/lib/auth.php';
+require_once __DIR__ . '/lib/language.php';
+
+// Initialize language system
+LanguageManager::init();
+
+$errors = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $name = trim($_POST['name'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $password2 = $_POST['password2'] ?? '';
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = LanguageManager::t('error_invalid_email');
+    }
+    if (strlen($password) < 6) {
+        $errors[] = LanguageManager::t('error_password_min_length');
+    }
+    if ($password !== $password2) {
+        $errors[] = LanguageManager::t('error_passwords_not_match');
+    }
+
+    if (!$errors) {
+        try {
+            $pdo = DatabaseConnectionProvider::getConnection();
+            if (find_user_by_email($pdo, $email)) {
+                $errors[] = LanguageManager::t('error_user_exists');
+            } else {
+                $uid = create_user($pdo, $email, $password, $name);
+                login_user($uid);
+                header('Location: index.php');
+                exit;
+            }
+        } catch (Throwable $e) {
+            $errors[] = LanguageManager::t('error_server') . ': ' . $e->getMessage();
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — JustSite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #1e40af 100%);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 4rem;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: white;
+        }
+
+        .brand-text {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .welcome-text {
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .decorative-lines {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 100px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .decorative-lines::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            width: 60px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .decorative-lines::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: 40px;
+            width: 40px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .right-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .auth-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .auth-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin: 0;
+            font-weight: 400;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-input {
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: white;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+        
+        .auth-button {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.3);
+        }
+        
+        .auth-button:active {
+            transform: translateY(0);
+        }
+        
+        .auth-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .auth-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .auth-link:hover {
+            color: #5a67d8;
+        }
+        
+        .error-message {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 1px solid #f87171;
+            color: #dc2626;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        @media (max-width: 640px) {
+            .auth-container {
+                padding: 32px 24px;
+                margin: 16px;
+                border-radius: 20px;
+            }
+            
+            .auth-title {
+                font-size: 28px;
+            }
+            
+            .back-link {
+                top: 16px;
+                left: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="brand">
+            <div class="brand-icon">J</div>
+            <div class="brand-text">JustSite</div>
+        </div>
+        
+        <div class="welcome-text">
+            <h1 class="welcome-title">Создавайте<br>профессиональные<br>сайты легко</h1>
+            <p class="welcome-subtitle">Добро пожаловать в JustSite - платформу для создания сайтов без кодирования</p>
+        </div>
+        
+        <div class="decorative-lines"></div>
+    </div>
+
+    <div class="flex items-center justify-center p-8">
+        <div class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+            <?php if (!empty($errors)): ?>
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+                    <?php echo implode('<br>', array_map('htmlspecialchars', $errors)); ?>
+                </div>
+            <?php endif; ?>
+            
+            <form method="post" class="space-y-6">
+                <div>
+                    <input 
+                        class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white transition-all outline-none" 
+                        type="email" 
+                        name="email" 
+                        placeholder="Username/Email" 
+                        required 
+                        value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
+                    >
+                </div>
+                
+                <div>
+                    <input 
+                        class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white transition-all outline-none" 
+                        type="password" 
+                        name="password" 
+                        placeholder="Password" 
+                        required
+                    >
+                </div>
+                
+                <div>
+                    <input 
+                        class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white transition-all outline-none" 
+                        type="password" 
+                        name="password2" 
+                        placeholder="Confirm Password" 
+                        required
+                    >
+                </div>
+                
+                <button 
+                    type="button" 
+                    class="flex items-center justify-between w-full py-2 text-gray-600 hover:text-gray-800 transition-colors" 
+                    onclick="toggleOptional()"
+                >
+                    <span>Optional Profile Information</span>
+                    <span id="toggle-icon" class="transform transition-transform">▼</span>
+                </button>
+                
+                <div class="hidden" id="optional-fields">
+                    <input 
+                        class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white transition-all outline-none" 
+                        type="text" 
+                        name="name" 
+                        placeholder="Full Name" 
+                        value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>"
+                    >
+                </div>
+                
+                <button 
+                    class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" 
+                    type="submit"
+                >
+                    Register
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <a href="login.php" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleOptional() {
+            const fields = document.getElementById('optional-fields');
+            const icon = document.getElementById('toggle-icon');
+            
+            if (fields.classList.contains('hidden')) {
+                fields.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                fields.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+    </script>
+</body>
+</html>
